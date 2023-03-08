@@ -6,125 +6,40 @@ using UnityEngine.Windows;
 
 public class movement : MonoBehaviour
 {
-    [Header("Horizontal Movement")]
-    public float moveSpeed = 10f;
-    public Vector2 direction;
-    
-    [Header("Vertical Movement")]
-    public float jumpSpeed = 15f;
-    public float jumpDelay = 0.25f;
-    private float jumpTimer;
+    [SerializeField] private float walkingSpeed = 7.16f;
+    [SerializeField, Range(0f, 100f)]
+    float maxAcceleration = 10f;
 
-    [Header("Components")]
-    public Rigidbody2D rb;
-    private SpriteRenderer _renderer;
-    public SpriteRenderer _bensonsBill;
-    public LayerMask groundLayer;
-    public GameObject characterHolder;
+    float jumpForce = 10f;
 
-    [Header("Physics")]
-    public float maxSpeed = 7f;
-    public float linearDrag = 4f;
-    public float gravity = 1f;
-    public float fallMultiplier = 5f;
+    [SerializeField] private float gravityMultiplier = 5f;
 
-    [Header("Collision")]
-    public bool onGround = false;
-    public float groundLength = 0.6f;
-    public Vector3 colliderOffset;
+    Vector2 playerInput;
+    public Rigidbody2D rigidBody2D;
+    Vector3 velocity;
 
-    void Start()
+    private void Update()
     {
-        _renderer = GetComponent<SpriteRenderer>();
-        if (_renderer == null)
+        playerInput.x = UnityEngine.Input.GetAxis("Horizontal");
+        playerInput.y = 0f;
+
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Space) || UnityEngine.Input.GetButtonDown("Jump"))
         {
-            Debug.LogError("Player Sprite is missing a renderer");
+            rigidBody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
+
+        playerInput.Normalize();
+
+        Vector3 accel = new Vector3(playerInput.x, 0f, playerInput.y) * walkingSpeed;
+
+        Vector3 desiredVelocity =
+            new Vector3(playerInput.x, 0f, playerInput.y) * walkingSpeed;
+        float maxSpeedChange = maxAcceleration * Time.deltaTime;
+        velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, maxSpeedChange);
+        velocity.z = Mathf.MoveTowards(velocity.z, desiredVelocity.z, maxSpeedChange);
+
+
+        Vector3 displacement = accel * Time.deltaTime;
+        transform.localPosition += displacement;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        bool wasOnGround = onGround;
-        onGround = Physics2D.Raycast(transform.position + colliderOffset, Vector2.down, groundLength, groundLayer) || Physics2D.Raycast(transform.position - colliderOffset, Vector2.down, groundLength, groundLayer);
-
-        if (Gamepad.current.buttonSouth.wasPressedThisFrame || Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            jumpTimer = Time.time + jumpDelay;
-        }
-        direction = new Vector2(UnityEngine.Input.GetAxisRaw("Horizontal"), Gamepad.current.buttonSouth.ReadValue());
-    }
-    void FixedUpdate()
-    {
-        moveCharacter(direction.x);
-        if (jumpTimer > Time.time && onGround)
-        {
-            Jump();
-        }
-        modifyPhysics();
-    }
-    void moveCharacter(float horizontal)
-    {
-        rb.AddForce(Vector2.right * horizontal * moveSpeed);
-
-        if (UnityEngine.Input.GetAxisRaw("Horizontal") > 0)
-        {
-            _renderer.flipX = false;
-            _bensonsBill.flipX = false;
-        }
-        else if (UnityEngine.Input.GetAxisRaw("Horizontal") < 0)
-        {
-            _renderer.flipX = true;
-            _bensonsBill.flipX = true;
-        }
-
-        if (Mathf.Abs(rb.velocity.x) > maxSpeed)
-        {
-            rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
-        }
-    }
-    void Jump()
-    {
-        rb.velocity = new Vector2(rb.velocity.x, 0);
-        rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
-        jumpTimer = 0;
-    }
-    void modifyPhysics()
-    {
-
-        //bool changingDirections = (direction.x > 0 && rb.velocity.x < 0) || (direction.x < 0 && rb.velocity.x > 0);
-
-        if (onGround)
-        {
-            if (Mathf.Abs(direction.x) < 0.4f/* || changingDirections*/)
-            {
-                rb.drag = linearDrag;
-            }
-            else
-            {
-                rb.drag = 0f;
-            }
-            rb.gravityScale = 0;
-        }
-        else
-        {
-            rb.gravityScale = gravity;
-            if (rb.velocity.y < 0)
-            {
-                rb.gravityScale = gravity * fallMultiplier;
-            }
-            else if (rb.velocity.y > 0 && Gamepad.current.buttonSouth.wasPressedThisFrame)
-            {
-                rb.gravityScale = gravity * (fallMultiplier / 2);
-            }
-        }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position + colliderOffset, transform.position + colliderOffset + Vector3.down * groundLength);
-        Gizmos.DrawLine(transform.position - colliderOffset, transform.position - colliderOffset + Vector3.down * groundLength);
-    }
-
 }
