@@ -7,12 +7,11 @@ public class Stamina : MonoBehaviour
 {
     [Header("Gliding Attributes")]
     [SerializeField] private Image glidingBarFill;
-    [SerializeField] private AnimationCurve curve;
+    [SerializeField] private AnimationCurve curve; 
     [SerializeField] private float desiredDuration = 3f;
-    [SerializeField] private float rechargeDuration = 3f;
     [SerializeField] private float elapsedTime;
-    [SerializeField] private float glidingAmount = 100;
     [SerializeField] private float currentGlidingPower;
+    [SerializeField] private float usedGlidingPower;
     [SerializeField] private float maxGlidingPower;
     private Coroutine regenerateStamina;
     private WaitForSeconds regenTick = new WaitForSeconds(0.1f);
@@ -25,6 +24,7 @@ public class Stamina : MonoBehaviour
     
     public void UseStamina(int amount)
     {
+        usedGlidingPower = amount;
         if (currentGlidingPower - amount < 0)
         {
             currentGlidingPower -= amount;
@@ -49,5 +49,19 @@ public class Stamina : MonoBehaviour
             glidingBarFill.fillAmount = Mathf.Lerp(0, 1, Mathf.SmoothStep(0, 1, percentFilled));
             yield return regenTick;
         }
+    }
+
+    public bool CanGlide()
+    {
+        bool canGlide;
+        if (currentGlidingPower > usedGlidingPower)
+        {
+            canGlide = true;
+        }
+        else
+        {
+            canGlide = false;
+        }
+        return canGlide;
     }
 }

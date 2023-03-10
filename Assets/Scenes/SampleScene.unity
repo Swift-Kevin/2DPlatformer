@@ -463,7 +463,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7889785934620558365}
-  - {fileID: 1203932191}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -588,7 +587,7 @@ GameObject:
   - component: {fileID: 1203932193}
   - component: {fileID: 1203932192}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: StaminaBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -601,19 +600,19 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1203932190}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.34}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.8158369}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1422103506}
   - {fileID: 913747762}
-  m_Father: {fileID: 162000439}
-  m_RootOrder: 1
+  m_Father: {fileID: 7889785934620558365}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.321, y: 0.389}
+  m_AnchoredPosition: {x: 0.019000143, y: -0.051773965}
   m_SizeDelta: {x: 2.1197, y: 2.8957}
   m_Pivot: {x: 0.4968133, y: 0.5203952}
 --- !u!114 &1203932192
@@ -125942,6 +125941,7 @@ Transform:
   m_Children:
   - {fileID: 1886184181}
   - {fileID: 1865333431}
+  - {fileID: 1203932191}
   m_Father: {fileID: 162000439}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -126016,7 +126016,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &8226135897115319289
 MonoBehaviour:
@@ -126043,23 +126043,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0d56a5dcdbe9594aad464e0a3d3669f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkingSpeed: 7.16
-  gravityMultiplier: 5
-  jumpForce: 10
-  maxAcceleration: 10
-  bounciness: 0.5
+  rb: {fileID: 8226135897115319287}
   _renderer: {fileID: 8226135897115319286}
   _bensonsBill: {fileID: 1865333432}
-  rigidBody2D: {fileID: 8226135897115319287}
+  stamina: {fileID: 8226135897115319292}
   groundLength: 1.1
+  maxSpeed: 7.16
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   colliderOffset: {x: 0.16, y: 0, z: 0}
-  stamina: {fileID: 8226135897115319292}
-  staminaToUse: 5
-  downwardGravity: 40
-  normalGravity: 10
+  maxAcceleration: 21.48
+  maxAirAcceleration: 1
+  jumpHeight: 5
+  maxGroundAngle: 25
 --- !u!70 &8226135897115319291
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -126123,8 +126120,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   desiredDuration: 3
-  rechargeDuration: 3
   elapsedTime: 0
-  glidingAmount: 100
   currentGlidingPower: 0
+  usedGlidingPower: 0
   maxGlidingPower: 100
