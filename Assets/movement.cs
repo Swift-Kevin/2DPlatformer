@@ -32,7 +32,7 @@ public class movement : MonoBehaviour
 
     private void Start()
     {
-        Gamepad gamepad = Gamepad.current;
+        gamepad = Gamepad.current;
         if (gamepad != null) { return; }
     }
 
@@ -80,6 +80,11 @@ public class movement : MonoBehaviour
         if (onGround)
         {
             jumpPhase = 0;
+        }
+
+        if (gamepad.buttonEast.wasPressedThisFrame)
+        {
+            stamina.UseStamina(10);
         }
     }
 
@@ -168,4 +173,6 @@ public class movement : MonoBehaviour
         Gizmos.DrawLine(transform.position + colliderOffset, transform.position + colliderOffset + Vector3.down * groundLength);
         Gizmos.DrawLine(transform.position - colliderOffset, transform.position - colliderOffset + Vector3.down * groundLength);
     }
+
+
 }

@@ -12,7 +12,7 @@ public class Stamina : MonoBehaviour
     [SerializeField] private float elapsedTime;
     [SerializeField] private float currentGlidingPower;
     [SerializeField] private float usedGlidingPower;
-    [SerializeField] private float maxGlidingPower;
+    [SerializeField] private float maxGlidingPower = 100f;
     private Coroutine regenerateStamina;
     private WaitForSeconds regenTick = new WaitForSeconds(0.1f);
 
@@ -39,7 +39,7 @@ public class Stamina : MonoBehaviour
             Debug.Log("Not Enough Gliding Power");
         }
     }
-    private IEnumerator StaminaRegen()
+    public IEnumerator StaminaRegen()
     {
         yield return new WaitForSeconds(2);
         while (currentGlidingPower < maxGlidingPower)
