@@ -1,17 +1,20 @@
 using System.Data;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 public class movement : MonoBehaviour
 {
-    Gamepad gamepad;
+
+    PlayerMovement playerMovement;
 
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private SpriteRenderer _bensonsBill;
+    [SerializeField] private SpriteRenderer _bensonWing;
     [SerializeField] public Stamina stamina;
+    [SerializeField] private float glidePowerUsed = 10f;
     [SerializeField] private float groundLength = 0.6f;
     [SerializeField] private float maxSpeed = 7.16f;
     [SerializeField] private LayerMask groundLayer;
@@ -20,20 +23,26 @@ public class movement : MonoBehaviour
     Vector3 contactNormal;
     private Vector2 playerInput;
     private Vector3 velocity, desiredVelocity;
-    int jumpPhase;
-
     private Rigidbody2D body;
     private bool onGround;
+    private float normalGrav;
     private bool desiredJump;
-    [SerializeField, Range(0f, 100f)] float maxAcceleration = 7.16f * 3f, maxAirAcceleration = 1f;
+
+    [Header("Sliders")]
+    [SerializeField, Range(0f, 100f)] float maxAcceleration = 7.16f * 3f;
+    [SerializeField, Range(0f, 100f)] float maxAirAcceleration = 1f;
     [SerializeField, Range(0f, 10f)] float jumpHeight = 5f;
     [SerializeField, Range(0f, 90f)] float maxGroundAngle = 25f;
     float minGroundDotProduct;
 
     private void Start()
     {
-        gamepad = Gamepad.current;
-        if (gamepad != null) { return; }
+        playerMovement = new PlayerMovement();
+        playerMovement.PlayerMoving.Enable();
+
+        _bensonWing.enabled = false;
+
+        normalGrav = rb.gravityScale;
     }
 
     void OnValidate()
@@ -49,23 +58,37 @@ public class movement : MonoBehaviour
     private void Update()
     {
         onGround = Physics2D.Raycast(transform.position + colliderOffset, Vector2.down, groundLength, groundLayer) || Physics2D.Raycast(transform.position - colliderOffset, Vector2.down, groundLength, groundLayer);
-
-        playerInput.x = Input.GetAxis("Horizontal");
-        playerInput.y = 0f;
-        playerInput = Vector2.ClampMagnitude(playerInput, 1f);
-
-        desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
         
-        desiredJump |= Input.GetButtonDown("Jump") || Gamepad.current.buttonSouth.wasPressedThisFrame;
+        if (onGround && !stamina.IsGPMaxed())
+        {
+            stamina.RegenGP();
+            rb.gravityScale = normalGrav;
+            _bensonWing.enabled = false;
+        }
 
+        if (playerMovement.PlayerMoving.Glide.WasPressedThisFrame() && !onGround)
+        {
+            stamina.UseGP(glidePowerUsed);
+            rb.gravityScale = normalGrav / 2f;
+            _bensonWing.enabled = true;
+        }
 
-        FlipCharacter();
+        UpdateSprite();
     }
 
     private void FixedUpdate()
     {
+        playerInput = playerMovement.PlayerMoving.Movement.ReadValue<Vector2>();
+        playerInput.y = 0f;
+        playerInput = Vector2.ClampMagnitude(playerInput, 1f);
+
+        desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
+
+        desiredJump |= playerMovement.PlayerMoving.Jump.IsPressed();
+
         UpdateState();
         AdjustVelocity();
+        
 
         if (desiredJump && onGround)
         {
@@ -77,15 +100,6 @@ public class movement : MonoBehaviour
     void UpdateState()
     {
         velocity = body.velocity;
-        if (onGround)
-        {
-            jumpPhase = 0;
-        }
-
-        if (gamepad.buttonEast.wasPressedThisFrame)
-        {
-            stamina.UseStamina(10);
-        }
     }
 
     void Jump()
@@ -152,20 +166,23 @@ public class movement : MonoBehaviour
 
     }
 
-    void FlipCharacter()
+    void UpdateSprite()
     {
         #region FlipPlayer
         if (UnityEngine.Input.GetAxisRaw("Horizontal") > 0)
         {
             _renderer.flipX = false;
             _bensonsBill.flipX = false;
+            _bensonWing.flipX = false;
         }
         else if (UnityEngine.Input.GetAxisRaw("Horizontal") < 0)
         {
             _renderer.flipX = true;
             _bensonsBill.flipX = true;
+            _bensonWing.flipX = true;
         }
         #endregion
+
     }
     private void OnDrawGizmos()
     {
@@ -174,5 +191,8 @@ public class movement : MonoBehaviour
         Gizmos.DrawLine(transform.position - colliderOffset, transform.position - colliderOffset + Vector3.down * groundLength);
     }
 
-
+    public float GetGlidePowerUsed()
+    {
+        return glidePowerUsed;
+    }
 }

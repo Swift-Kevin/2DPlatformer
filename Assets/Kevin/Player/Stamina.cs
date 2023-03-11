@@ -5,63 +5,51 @@ using UnityEngine.UI;
 
 public class Stamina : MonoBehaviour
 {
+    // GP = Gliding Power
     [Header("Gliding Attributes")]
     [SerializeField] private Image glidingBarFill;
-    [SerializeField] private AnimationCurve curve; 
-    [SerializeField] private float desiredDuration = 3f;
-    [SerializeField] private float elapsedTime;
-    [SerializeField] private float currentGlidingPower;
-    [SerializeField] private float usedGlidingPower;
-    [SerializeField] private float maxGlidingPower = 100f;
-    private Coroutine regenerateStamina;
-    private WaitForSeconds regenTick = new WaitForSeconds(0.1f);
+    [SerializeField] private Slider slider;
+    [SerializeField] private float maxGP = 100f;
+    [SerializeField] private float currentGP;
+    [SerializeField] private float usingGP;
+    
+    private bool canGlide;
 
     private void Start()
     {
-        currentGlidingPower = maxGlidingPower;
-        glidingBarFill.fillAmount = maxGlidingPower;
+        slider.maxValue = maxGP;
+        currentGP = maxGP;
+
+        slider.value = currentGP;
+        usingGP = 0f;
     }
     
-    public void UseStamina(int amount)
+    public void UseGP(float amount)
     {
-        usedGlidingPower = amount;
-        if (currentGlidingPower - amount < 0)
+        if (currentGP - amount >= 0)
         {
-            currentGlidingPower -= amount;
-            glidingBarFill.fillAmount = currentGlidingPower;
-            if (regenerateStamina != null)
-                StopCoroutine(regenerateStamina);
-
-            regenerateStamina = StartCoroutine(StaminaRegen());
-        }
-        else
-        {
-            Debug.Log("Not Enough Gliding Power");
+            currentGP -= amount;
+            slider.value = currentGP;
         }
     }
-    public IEnumerator StaminaRegen()
+
+    public void RegenGP()
     {
-        yield return new WaitForSeconds(2);
-        while (currentGlidingPower < maxGlidingPower)
+        if (currentGP < maxGP)
         {
-            float percentFilled = elapsedTime / desiredDuration;
-            currentGlidingPower =
-            glidingBarFill.fillAmount = Mathf.Lerp(0, 1, Mathf.SmoothStep(0, 1, percentFilled));
-            yield return regenTick;
+            currentGP += 5f * Time.deltaTime;
+            slider.value = currentGP;
         }
     }
 
     public bool CanGlide()
     {
-        bool canGlide;
-        if (currentGlidingPower > usedGlidingPower)
-        {
-            canGlide = true;
-        }
-        else
-        {
-            canGlide = false;
-        }
+        canGlide = currentGP > usingGP ? canGlide = true : canGlide = false;
         return canGlide;
+    }
+
+    public bool IsGPMaxed()
+    {
+        return currentGP == maxGP;
     }
 }

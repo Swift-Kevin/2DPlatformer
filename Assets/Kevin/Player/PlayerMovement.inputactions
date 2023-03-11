@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Glide",
+                    "type": "Button",
+                    "id": "99d5aae5-fb50-4108-87e3-d3a5923e7459",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -61,7 +70,7 @@
                 {
                     "name": "left",
                     "id": "8dd52206-8b65-4d97-8f72-3b8001f215c1",
-                    "path": "<Keyboard>/d",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
@@ -72,7 +81,7 @@
                 {
                     "name": "right",
                     "id": "18783fc6-d727-4606-abb0-9dfaca2b01a8",
-                    "path": "<Keyboard>/a",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
@@ -137,6 +146,28 @@
                 },
                 {
                     "name": "",
+                    "id": "1a051437-8758-41fd-842c-f5e8f0615102",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bf21aa1b-6cc4-47c1-8b41-6135975d8695",
+                    "path": "<Gamepad>/dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "723697d5-96c3-4a1c-8e8f-31c25bebfe19",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
@@ -154,6 +185,28 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "45884b28-2e95-43cb-b193-920b3acc10ee",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Xbox",
+                    "action": "Glide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "077f6666-292d-4daa-9430-726b70f0e235",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Glide",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

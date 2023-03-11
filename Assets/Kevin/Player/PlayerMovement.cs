@@ -44,6 +44,15 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Glide"",
+                    ""type"": ""Button"",
+                    ""id"": ""99d5aae5-fb50-4108-87e3-d3a5923e7459"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -83,7 +92,7 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""left"",
                     ""id"": ""8dd52206-8b65-4d97-8f72-3b8001f215c1"",
-                    ""path"": ""<Keyboard>/d"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -94,7 +103,7 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""right"",
                     ""id"": ""18783fc6-d727-4606-abb0-9dfaca2b01a8"",
-                    ""path"": ""<Keyboard>/a"",
+                    ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -159,6 +168,28 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""1a051437-8758-41fd-842c-f5e8f0615102"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bf21aa1b-6cc4-47c1-8b41-6135975d8695"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""723697d5-96c3-4a1c-8e8f-31c25bebfe19"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
@@ -176,6 +207,28 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""45884b28-2e95-43cb-b193-920b3acc10ee"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Xbox"",
+                    ""action"": ""Glide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""077f6666-292d-4daa-9430-726b70f0e235"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Glide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -199,6 +252,7 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
         m_PlayerMoving = asset.FindActionMap("PlayerMoving", throwIfNotFound: true);
         m_PlayerMoving_Movement = m_PlayerMoving.FindAction("Movement", throwIfNotFound: true);
         m_PlayerMoving_Jump = m_PlayerMoving.FindAction("Jump", throwIfNotFound: true);
+        m_PlayerMoving_Glide = m_PlayerMoving.FindAction("Glide", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -260,12 +314,14 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
     private IPlayerMovingActions m_PlayerMovingActionsCallbackInterface;
     private readonly InputAction m_PlayerMoving_Movement;
     private readonly InputAction m_PlayerMoving_Jump;
+    private readonly InputAction m_PlayerMoving_Glide;
     public struct PlayerMovingActions
     {
         private @PlayerMovement m_Wrapper;
         public PlayerMovingActions(@PlayerMovement wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_PlayerMoving_Movement;
         public InputAction @Jump => m_Wrapper.m_PlayerMoving_Jump;
+        public InputAction @Glide => m_Wrapper.m_PlayerMoving_Glide;
         public InputActionMap Get() { return m_Wrapper.m_PlayerMoving; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -281,6 +337,9 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_PlayerMovingActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_PlayerMovingActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_PlayerMovingActionsCallbackInterface.OnJump;
+                @Glide.started -= m_Wrapper.m_PlayerMovingActionsCallbackInterface.OnGlide;
+                @Glide.performed -= m_Wrapper.m_PlayerMovingActionsCallbackInterface.OnGlide;
+                @Glide.canceled -= m_Wrapper.m_PlayerMovingActionsCallbackInterface.OnGlide;
             }
             m_Wrapper.m_PlayerMovingActionsCallbackInterface = instance;
             if (instance != null)
@@ -291,6 +350,9 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Glide.started += instance.OnGlide;
+                @Glide.performed += instance.OnGlide;
+                @Glide.canceled += instance.OnGlide;
             }
         }
     }
@@ -317,5 +379,6 @@ public partial class @PlayerMovement : IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnGlide(InputAction.CallbackContext context);
     }
 }
