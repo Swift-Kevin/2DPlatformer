@@ -62,8 +62,12 @@ public class movement : MonoBehaviour
         if (onGround && !stamina.IsGPMaxed())
         {
             stamina.RegenGP();
-            rb.gravityScale = normalGrav;
             _bensonWing.enabled = false;
+        }
+        
+        if (onGround)
+        {
+            rb.gravityScale = normalGrav;
         }
 
         if (playerMovement.PlayerMoving.Glide.WasPressedThisFrame() && !onGround)
