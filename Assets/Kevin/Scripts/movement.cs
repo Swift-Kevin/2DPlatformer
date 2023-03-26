@@ -20,7 +20,7 @@ public class movement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Vector3 colliderOffset;
     
-    Vector3 contactNormal;
+    //Vector3 contactNormal;
     private Vector2 playerInput;
     private Vector3 velocity, desiredVelocity;
     private Rigidbody2D body;
@@ -89,10 +89,10 @@ public class movement : MonoBehaviour
         desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
 
         desiredJump |= playerMovement.PlayerMoving.Jump.IsPressed();
-
+        
         UpdateState();
         AdjustVelocity();
-        
+
 
         if (desiredJump && onGround)
         {
@@ -109,12 +109,12 @@ public class movement : MonoBehaviour
     void Jump()
     {
         float jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight);
-        float alignedSpeed = Vector3.Dot(velocity, contactNormal);
-        if (alignedSpeed > 0f)
-        {
-            jumpSpeed = Mathf.Max(jumpSpeed - alignedSpeed, 0f);
-        }
-        velocity += contactNormal * jumpSpeed;
+        //float alignedSpeed = Vector3.Dot(velocity, contactNormal);
+        //if (alignedSpeed > 0f)
+        //{
+        //    jumpSpeed = Mathf.Max(jumpSpeed - alignedSpeed, 0f);
+        //}
+        velocity += Vector3.up * jumpSpeed;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -125,11 +125,11 @@ public class movement : MonoBehaviour
             if (normal.y >= minGroundDotProduct)
             {
                 onGround = true;
-                contactNormal = normal;
+                //contactNormal = normal;
             }
             else
             {
-                contactNormal = Vector3.up;
+                //contactNormal = Vector3.up;
             }
         }
     }
@@ -149,7 +149,7 @@ public class movement : MonoBehaviour
     }
     Vector3 ProjectOnContactPlane(Vector3 vector)
     {
-        return vector - contactNormal * Vector3.Dot(vector, contactNormal);
+        return vector - Vector3.up * Vector3.Dot(vector, Vector3.up);
     }
 
     void AdjustVelocity()

@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class TutorialWalkthrough : MonoBehaviour
 {
-    [SerializeField] private GameObject walkPanel;
+    [SerializeField] private CanvasGroup alphaPanel;
+    [SerializeField] private GameObject obj;
+    private void Awake()
+    {
+        alphaPanel.alpha = 0;
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        walkPanel.SetActive(true);
-
+        if (obj.tag == "WalkHUD")
+            alphaPanel.alpha = 1;
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        walkPanel.SetActive(false);
+        if (obj.tag == "WalkHUD")
+            alphaPanel.alpha = 0;
     }
 }
